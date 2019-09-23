@@ -1,2 +1,2 @@
 # Vision.py
-OpenCv project with adjustable sliders to fine tune camera output
+OpenCV python project with adjustable sliders to fine tune camera output
