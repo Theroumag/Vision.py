@@ -15,12 +15,12 @@ def Val(bound): return cv.getTrackbarPos(f'{bound}: Val', 'window')
 def scope(h1, s1, v1, h2, s2, v2):
     return [ np.array([h1 ,s1, v1]), np.array([h2 ,s2 ,v2]) ]
 
-cv.createTrackbar('Lower: Hue', 'window', 0, 255, lambda lower: Hue("Lower"))
-cv.createTrackbar('Lower: Sat', 'window', 0, 255, lambda lower: Sat("Lower"))
-cv.createTrackbar('Lower: Val', 'window', 0, 255, lambda lower: Val("Lower"))
-cv.createTrackbar('Upper: Hue', 'window', 0, 255, lambda upper: Hue("Upper"))
-cv.createTrackbar('Upper: Sat', 'window', 0, 255, lambda upper: Sat("Upper"))
-cv.createTrackbar('Upper: Val', 'window', 0, 255, lambda upper: Val("Upper"))
+cv.createTrackbar('Lower: Hue', 'window', 0, 255, lambda x: Hue("Lower"))
+cv.createTrackbar('Lower: Sat', 'window', 0, 255, lambda x: Sat("Lower"))
+cv.createTrackbar('Lower: Val', 'window', 0, 255, lambda x: Val("Lower"))
+cv.createTrackbar('Upper: Hue', 'window', 0, 255, lambda x: Hue("Upper"))
+cv.createTrackbar('Upper: Sat', 'window', 0, 255, lambda x: Sat("Upper"))
+cv.createTrackbar('Upper: Val', 'window', 0, 255, lambda x: Val("Upper"))
 
 while (1):
     _, frame = cap.read()
