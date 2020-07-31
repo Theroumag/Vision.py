@@ -15,7 +15,6 @@ def Val(bound): return cv.getTrackbarPos(f'{bound}: Val', 'window')
 def scope(h1, s1, v1, h2, s2, v2):
     return [ np.array([h1 ,s1, v1]), np.array([h2 ,s2 ,v2]) ]
 
-
 cv.createTrackbar('Lower: Hue', 'window', 0, 255, lambda lower: Hue("Lower"))
 cv.createTrackbar('Lower: Sat', 'window', 0, 255, lambda lower: Sat("Lower"))
 cv.createTrackbar('Lower: Val', 'window', 0, 255, lambda lower: Val("Lower"))
@@ -25,14 +24,11 @@ cv.createTrackbar('Upper: Val', 'window', 0, 255, lambda upper: Val("Upper"))
 
 while (1):
     _, frame = cap.read()
-
     hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
     _scope = scope( Hue(bounds[0]),Sat(bounds[0]),Val(bounds[0]),
                     Hue(bounds[1]),Sat(bounds[1]),Val(bounds[1]))
-
     mask = cv.inRange(hsv, _scope[0], _scope[1])
     res = cv.bitwise_and(frame,frame, mask= mask)
-
     cv.imshow("window", res)
     key = cv.waitKey(1)  # milliseconds/update (fps), grabs keyboard
     if key == 113: break # 'q' is 113 on my machine; use print(key)
