@@ -1,75 +1,40 @@
-import cv2
+#!/usr/bin/python
+import cv2 as cv
 import numpy as np
 
-#Captures first frame
-cap = cv2.VideoCapture(0)
+cap = cv.VideoCapture(0)
+cv.namedWindow("window")
+bounds = ['Lower', 'Upper']
+attributes = ['Hue','Sat','Val']
+scope = [np.array([0,0,0]), np.array([255,255,255])]
 
-#cap.read returns 2 outputs, a bool if the capture was succesful
-#and the read frame
-err, src = cap.read()
+def Hue(bound): return cv.getTrackbarPos(f'{bound}: Hue', 'window')
+def Sat(bound): return cv.getTrackbarPos(f'{bound}: Sat', 'window')
+def Val(bound): return cv.getTrackbarPos(f'{bound}: Val', 'window')
 
-#Used to erode small white bits
-kernel = np.ones((10,10), np.uint8)
-
-#upper color limit
-up = np.array([255, 255, 255])
-#lower color limit
-down = np.array([0, 0, 0])
-
-#functions for sliders (adjusts color to slider value)
-def upH(hue):
-    up[0] = hue
-
-def upV(hue):
-    up[1] = hue
-
-def upS(hue):
-    up[2] = hue
-
-def downH(hue):
-    down[0] = hue
-    
-def downS(hue):
-    down[1] = hue
-
-def downV(hue):
-    down[0] = hue
+def scope(h1, s1, v1, h2, s2, v2):
+    return [ np.array([h1 ,s1, v1]), np.array([h2 ,s2 ,v2]) ]
 
 
-erode_times = 0
-def erode(value):
-    global erode_times
-    erode_times += 1
-    print(erode_times)
-    
-#creates empty window with sliders
-window = cv2.namedWindow("Slider Page")
-#0, 255 are upper and lower slider values the last parameter is the fuction called when slider moved
-cv2.createTrackbar("Up_Hue", "Slider Page", 0, 255, upH)
-cv2.createTrackbar("Up_Sat", "Slider Page", 0, 255, upS)
-cv2.createTrackbar("Up_Val", "Slider Page", 0, 255, upV)
-cv2.createTrackbar("Down_Hue", "Slider Page", 0, 255, downH)
-cv2.createTrackbar("Down_Sat", "Slider Page", 0, 255, downS)
-cv2.createTrackbar("Down_Val", "Slider Page", 0, 255, downV)
-cv2.createTrackbar("To Erode", "Slider Page", 0, 1, erode)
+cv.createTrackbar('Lower: Hue', 'window', 0, 255, lambda lower: Hue("Lower"))
+cv.createTrackbar('Lower: Sat', 'window', 0, 255, lambda lower: Sat("Lower"))
+cv.createTrackbar('Lower: Val', 'window', 0, 255, lambda lower: Val("Lower"))
+cv.createTrackbar('Upper: Hue', 'window', 0, 255, lambda upper: Hue("Upper"))
+cv.createTrackbar('Upper: Sat', 'window', 0, 255, lambda upper: Sat("Upper"))
+cv.createTrackbar('Upper: Val', 'window', 0, 255, lambda upper: Val("Upper"))
 
-#displays constant stream of frames (i.e. Video)
-while True:
-    #src = cv2.erode(src, kernel)
-    #erode(src)
-    #src = src1
-    err, src = cap.read()
-    src = cv2.flip(src, 1)
-    #converts RGB color scheme to HSV. In RBG the diffrence between
-    #red and blue is a little nudge, and in HSV it's clearly seperated
-    src = cv2.cvtColor(src, cv2.COLOR_BGR2HSV)
-    #Colors in range if upper bounds and lower bounds
-    src = cv2.inRange(src, down, up)
-    for time in range((erode_times+1)):
-        src = cv2.erode(src, kernel)
-    cv2.imshow(window, src)
-    #fps
-    cv2.waitKey(20)
+while (1):
+    _, frame = cap.read()
 
-with open("colorFile.txt", "w") as colorFile:
-    colorFile.write(up, down)
+    hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
+    _scope = scope( Hue(bounds[0]),Sat(bounds[0]),Val(bounds[0]),
+                    Hue(bounds[1]),Sat(bounds[1]),Val(bounds[1]))
+
+    mask = cv.inRange(hsv, _scope[0], _scope[1])
+    res = cv.bitwise_and(frame,frame, mask= mask)
+
+    cv.imshow("window", res)
+    key = cv.waitKey(1)  # milliseconds/update (fps), grabs keyboard
+    if key == 113: break # 'q' is 113 on my machine; use print(key)
+
+cv.destroyAllWindows()
